@@ -1,296 +1,716 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Guía: Dispositivos de Entrada y Salida</title>
-  <style>
-    :root { --p:#2563eb; --ok:#16a34a; --err:#dc2626; --warn:#f59e0b; --bg:#f8fafc; --card:#fff; --txt:#1e293b; --brd:#cbd5e1; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 20px; line-height: 1.5; }
-    .container { max-width: 950px; margin: 0 auto; background: var(--card); padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    h1 { text-align: center; color: var(--p); margin-bottom: 5px; }
-    .sub { text-align: center; color: #64748b; margin-bottom: 20px; font-size: 0.9rem; }
-    .header-inputs { display: flex; gap: 15px; margin-bottom: 10px; flex-wrap: wrap; }
-    .header-inputs input { flex: 1; padding: 10px; border: 2px solid var(--brd); border-radius: 6px; font-size: 1rem; }
-    
-    #score-top { background: #fffbeb; border: 2px solid #d97706; padding: 12px; border-radius: 8px; text-align: center; margin: 10px 0 20px 0; font-weight: bold; font-size: 1.15rem; display: none; }
-    #score-top .badge { background: #fef3c7; padding: 4px 12px; border-radius: 12px; font-size: 0.85rem; margin-top: 6px; display: inline-block; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía: Dispositivos de Entrada y Salida</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            padding: 20px; 
+            line-height: 1.6; 
+            min-height: 100vh;
+        }
+        .container { 
+            max-width: 1000px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 40px; 
+            border-radius: 20px; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3); 
+        }
+        h1 { 
+            text-align: center; 
+            color: #4361ee; 
+            font-size: 2.5rem; 
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .subtitle { 
+            text-align: center; 
+            color: #64748b; 
+            font-size: 1rem; 
+            margin-bottom: 30px; 
+        }
+        .header-inputs { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 20px; 
+            margin-bottom: 30px; 
+        }
+        .header-inputs input { 
+            padding: 15px; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 10px; 
+            font-size: 1rem; 
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+        }
+        .header-inputs input:focus {
+            outline: none;
+            border-color: #4361ee;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        .score-box {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            display: none;
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
+        }
+        .score-box h2 { margin: 0; font-size: 2.5rem; font-weight: 700; }
+        .score-box p { margin: 10px 0 0; font-size: 1.1rem; }
 
-    .theory { background: #eff6ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid var(--p); font-size: 0.9rem; }
-    .theory h3 { margin-top: 0; color: var(--p); }
-    .theory p { margin: 6px 0; }
+        .section { 
+            margin-bottom: 40px; 
+            padding: 30px; 
+            background: #f8fafc; 
+            border-radius: 15px; 
+            border: 2px solid #e2e8f0;
+        }
+        .section-title { 
+            font-size: 1.5rem; 
+            color: #4361ee; 
+            margin-bottom: 20px; 
+            padding-bottom: 15px;
+            border-bottom: 3px solid #4361ee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+        }
+        .badge {
+            background: #4361ee;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
 
-    .section { background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
-    .section h2 { margin-top: 0; color: var(--p); font-size: 1.25rem; border-bottom: 2px solid var(--p); padding-bottom: 8px; }
-    .q-row { display: flex; align-items: center; gap: 10px; margin: 10px 0; padding: 10px; background: white; border-radius: 6px; border: 1px solid #e2e8f0; flex-wrap: wrap; }
-    .q-row label { font-weight: 600; flex: 1; min-width: 150px; }
-    select { padding: 6px; border-radius: 4px; border: 1px solid var(--brd); font-size: 0.95rem; }
-    .opts { display: flex; flex-direction: column; gap: 4px; margin-left: 10px; }
-    .opts label { font-weight: normal; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
-    .opts label:hover { background: #f1f5f9; }
-    .pts { background: #dbeafe; color: var(--p); padding: 2px 6px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; }
-    .att { font-size: 0.8rem; color: #64748b; margin-left: auto; }
-    
-    .btn-v { background: var(--p); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; }
-    .btn-v:hover { background: #1d4ed8; }
-    .btn-v:disabled { background: #94a3b8; cursor: not-allowed; }
-    
-    .fb { padding: 6px 10px; border-radius: 4px; font-weight: 600; font-size: 0.85rem; display: none; margin-top: 5px; }
-    .fb.ok { background: #dcfce7; color: var(--ok); display: block; }
-    .fb.no { background: #fee2e2; color: var(--err); display: block; }
-    .fb.warn { background: #fef3c7; color: #b45309; display: block; }
+        .question-item {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 5px solid #4361ee;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #1e293b;
+            font-size: 1.05rem;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .options label {
+            background: #f8fafc;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+        }
+        .options label:hover {
+            border-color: #4361ee;
+            background: #eff6ff;
+        }
+        input[type="radio"] { margin-right: 12px; accent-color: #4361ee; width: 18px; height: 18px; }
+        select {
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+            width: 100%;
+            margin-top: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        select:focus {
+            outline: none;
+            border-color: #4361ee;
+        }
 
-    .ws-wrap { text-align: center; }
-    .ws-grid { display: grid; grid-template-columns: repeat(20, 26px); gap: 2px; margin: 15px auto; width: fit-content; user-select: none; }
-    .ws-cell { width: 26px; height: 26px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 3px; cursor: pointer; font-size: 0.85rem; }
-    .ws-cell:hover { background: #cbd5e1; }
-    .ws-cell.sel { background: var(--p); color: white; }
-    .ws-cell.found { background: var(--ok); color: white; cursor: default; }
-    .wl { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 10px 0; }
-    .wt { background: #dbeafe; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; border: 1px solid #93c5fd; }
-    .wt.found { background: #bbf7d0; border-color: #86efac; text-decoration: line-through; color: #166534; }
+        .btn-verify {
+            background: #4361ee;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+        .btn-verify:hover { background: #3a56d4; transform: translateY(-2px); }
+        .btn-verify:disabled { background: #94a3b8; cursor: not-allowed; transform: none; }
 
-    .btn-main { background: #059669; color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; cursor: pointer; font-size: 1.1rem; margin-top: 15px; font-weight: bold; }
-    .btn-main:hover { background: #047857; }
+        .feedback {
+            margin-top: 15px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            display: none;
+        }
+        .feedback.correct { background: #d1fae5; color: #065f46; display: block; border-left: 4px solid #10b981; }
+        .feedback.incorrect { background: #fee2e2; color: #991b1b; display: block; border-left: 4px solid #ef4444; }
+        .feedback.warning { background: #fef3c7; color: #92400e; display: block; border-left: 4px solid #f59e0b; }
 
-    @media print {
-      body { background: white; padding: 0; }
-      .container { box-shadow: none; padding: 15px; max-width: 100%; }
-      .btn-v, .btn-main, .fb, .att { display: none !important; }
-      #score-top { display: block !important; border: 2px solid #000; background: white !important; color: black !important; margin-bottom: 15px; }
-      select, input { border: 1px solid #000; background: white !important; color: black !important; }
-      .section { page-break-inside: avoid; }
-      .ws-cell { border: 1px solid #ccc; }
-    }
-  </style>
+        .attempts {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-left: 10px;
+            font-style: italic;
+        }
+
+        /* SOPA DE LETRAS */
+        .ws-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .ws-grid {
+            display: grid;
+            grid-template-columns: repeat(20, 28px);
+            gap: 3px;
+            background: #1e293b;
+            padding: 10px;
+            border-radius: 10px;
+            user-select: none;
+        }
+        .ws-cell {
+            width: 28px;
+            height: 28px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+            color: #1e293b;
+        }
+        .ws-cell:hover { background: #dbeafe; transform: scale(1.1); }
+        .ws-cell.selected { background: #4361ee; color: white; transform: scale(1.1); }
+        .ws-cell.found { background: #10b981; color: white; cursor: default; }
+
+        .word-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            max-width: 800px;
+        }
+        .word-tag {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .word-tag.found {
+            background: #10b981;
+            color: white;
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        .btn-main {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 700;
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3);
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+        .btn-main:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); }
+        
+        .btn-print {
+            background: #64748b;
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 700;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+        .btn-print:hover { transform: translateY(-3px); background: #475569; }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; padding: 20px; }
+            .btn-verify, .btn-main, .btn-print, .feedback, .attempts { display: none !important; }
+            .score-box { display: block !important; border: 3px solid #000; color: black; background: white !important; }
+            .score-box h2 { color: black; }
+            .section { break-inside: avoid; border: 1px solid #ccc; }
+            .ws-cell { border: 1px solid #999; }
+        }
+        @media (max-width: 768px) {
+            .header-inputs { grid-template-columns: 1fr; }
+            .ws-grid { grid-template-columns: repeat(20, 20px); }
+            .ws-cell { width: 20px; height: 20px; font-size: 11px; }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
+
+<div class="container">
     <h1>🔌 Dispositivos de Entrada y Salida</h1>
-    <div class="sub">Área: Tecnología e Informática | Máximo 2 intentos por pregunta</div>
+    <p class="subtitle">Guía Interactiva de Tecnología e Informática</p>
+
     <div class="header-inputs">
-      <input type="text" id="nombre" placeholder="Nombre del Estudiante">
-      <input type="text" id="curso" placeholder="Curso">
-      <input type="text" id="fecha" placeholder="Fecha">
-    </div>
-    
-    <div id="score-top"></div>
-
-    <div class="theory">
-      <h3>📘 Repaso Rápido</h3>
-      <p><strong>Entrada (E):</strong> Envían datos al computador (Teclado, Mouse, Micrófono, Escáner, Cámara).</p>
-      <p><strong>Salida (S):</strong> Reciben y muestran datos del computador (Monitor, Impresora, Parlantes, Audífonos, Proyector).</p>
-      <p><strong>Entrada/Salida (E/S):</strong> Hacen ambas funciones (Monitor Táctil, Memorias USB, Módem).</p>
+        <input type="text" id="nombre" placeholder="👤 Nombre del Estudiante">
+        <input type="text" id="curso" placeholder="🏫 Curso">
     </div>
 
+    <div class="score-box" id="score-box">
+        <h2 id="final-score">0 / 100</h2>
+        <p id="student-info"></p>
+        <p id="feedback-msg"></p>
+    </div>
+
+    <!-- ACTIVIDAD 1: EMPAREJAMIENTO -->
     <div class="section">
-      <h2>🔗 Actividad 1: Emparejamiento <span class="pts">20 pts</span></h2>
-      <p>Selecciona la función correcta para cada dispositivo.</p>
-      <div id="match-box"></div>
+        <div class="section-title">
+            1. Emparejamiento (Dispositivo - Función)
+            <span class="badge">20 Puntos</span>
+        </div>
+        <p style="margin-bottom: 20px;">Relaciona cada dispositivo con su función correcta.</p>
+        <div id="match-container"></div>
     </div>
 
+    <!-- ACTIVIDAD 2: SELECCIÓN MÚLTIPLE -->
     <div class="section">
-      <h2>❓ Actividad 2: Selección Múltiple <span class="pts">40 pts</span></h2>
-      <p>Marca la respuesta correcta.</p>
-      <div id="mc-box"></div>
+        <div class="section-title">
+            2. Selección Múltiple
+            <span class="badge">40 Puntos</span>
+        </div>
+        <p style="margin-bottom: 20px;">Selecciona la respuesta correcta.</p>
+        <div id="mc-container"></div>
     </div>
 
+    <!-- ACTIVIDAD 3: CLASIFICACIÓN -->
     <div class="section">
-      <h2>📋 Actividad 3: Clasificación Entrada (E) o Salida (S) <span class="pts">20 pts</span></h2>
-      <p>Indica si cada dispositivo es de Entrada o Salida.</p>
-      <div id="cls-box"></div>
+        <div class="section-title">
+            3. Clasificación: Entrada (E) o Salida (S)
+            <span class="badge">20 Puntos</span>
+        </div>
+        <p style="margin-bottom: 20px;">Indica si cada dispositivo es de Entrada o Salida.</p>
+        <div id="cls-container"></div>
     </div>
 
+    <!-- ACTIVIDAD 4: SOPA DE LETRAS -->
     <div class="section">
-      <h2>🔍 Actividad 4: Sopa de Letras <span class="pts">20 pts</span></h2>
-      <p>Encuentra las 14 palabras. Haz clic en las letras en orden y presiona <strong>Verificar</strong>. <span style="color:var(--warn)">️ Solo 2 verificaciones permitidas.</span></p>
-      <div class="ws-wrap">
-        <div class="wl" id="wl"></div>
-        <div class="ws-grid" id="wg"></div>
-        <button class="btn-v" id="ws-btn" onclick="verifyWS()">🔍 Verificar Selección</button>
-        <div id="ws-fb" class="fb"></div>
-        <p style="margin-top:10px;">Palabras encontradas: <span id="ws-count">0</span>/14</p>
-      </div>
+        <div class="section-title">
+            4. Sopa de Letras 20×20
+            <span class="badge">20 Puntos</span>
+        </div>
+        <p style="margin-bottom: 20px; text-align: center;">Encuentra las 14 palabras. Haz clic en las letras en orden y presiona "Verificar Selección".</p>
+        <div class="ws-container">
+            <div class="word-list" id="word-list"></div>
+            <div class="ws-grid" id="ws-grid"></div>
+            <button class="btn-verify" onclick="checkWordSearch()" id="ws-btn">✅ Verificar Selección</button>
+            <div id="ws-feedback" class="feedback"></div>
+            <p style="text-align: center; font-weight: 600; color: #4361ee;">Palabras encontradas: <span id="ws-count" style="font-size: 1.3rem;">0</span>/14</p>
+        </div>
     </div>
 
-    <button class="btn-main" onclick="calcScore()"> Calificar y Preparar PDF</button>
-    <button class="btn-main" onclick="window.print()" style="margin-top:10px; background:#64748b;">🖨️ Guardar como PDF / Imprimir</button>
-  </div>
+    <div class="actions">
+        <button class="btn-main" onclick="calculateFinalScore()">📊 Calificar Guía Completa</button>
+        <button class="btn-print" onclick="window.print()">🖨️ Guardar como PDF / Imprimir</button>
+    </div>
+</div>
 
-  <script>
-    // DATOS EXACTOS DEL DOCUMENTO
-    const matchOpts = {a:"a. Imprime en papel",b:"b. Reproduce sonido",c:"c. Muestra imágenes y texto",d:"d. Proyecta imágenes en pantalla grande",e:"e. Permiten escuchar audio individualmente",f:"f. Imprime planos de gran tamaño",g:"g. Muestra información visual digital",h:"h. Emiten sonido",i:"i. Muestra video e imágenes",j:"j. Presenta información visual en panel"};
-    const matchData = [
-      {q:"1. Monitor", opts:matchOpts, ans:"c"}, {q:"2. Impresora", opts:matchOpts, ans:"a"}, {q:"3. Parlantes", opts:matchOpts, ans:"b"},
-      {q:"4. Proyector", opts:matchOpts, ans:"d"}, {q:"5. Audífonos", opts:matchOpts, ans:"e"}, {q:"6. Plotter", opts:matchOpts, ans:"f"},
-      {q:"7. Pantalla LED", opts:matchOpts, ans:"g"}, {q:"8. Bocinas", opts:matchOpts, ans:"h"}, {q:"9. Televisor", opts:matchOpts, ans:"i"},
-      {q:"10. Display digital", opts:matchOpts, ans:"j"}
-    ];
+<script>
+// DATOS COMPLETOS
+const matchData = [
+    {q: "1. Monitor", opts: ["a. Imprime en papel", "b. Reproduce sonido", "c. Muestra imágenes y texto", "d. Proyecta imágenes en pantalla grande", "e. Permiten escuchar audio individualmente", "f. Imprime planos de gran tamaño", "g. Muestra información visual digital", "h. Emiten sonido", "i. Muestra video e imágenes", "j. Presenta información visual en panel"], ans: 2},
+    {q: "2. Impresora", opts: ["a. Imprime en papel", "b. Reproduce sonido", "c. Muestra imágenes y texto", "d. Proyecta imágenes en pantalla grande", "e. Permiten escuchar audio individualmente", "f. Imprime planos de gran tamaño", "g. Muestra información visual digital", "h. Emiten sonido", "i. Muestra video e imágenes", "j. Presenta información visual en panel"], ans: 0},
+    {q: "3. Parlantes", opts: ["a. Imprime en papel", "b. Reproduce sonido", "c. Muestra imágenes y texto", "d. Proyecta imágenes en pantalla grande", "e. Permiten escuchar audio individualmente", "f. Imprime planos de gran tamaño", "g. Muestra información visual digital", "h. Emiten sonido", "i. Muestra video e imágenes", "j. Presenta información visual en panel"], ans: 1},
+    {q: "4. Proyector", opts: ["a. Imprime en papel", "b. Reproduce sonido", "c. Muestra imágenes y texto", "d. Proyecta imágenes en pantalla grande", "e. Permiten escuchar audio individualmente", "f. Imprime planos de gran tamaño", "g. Muestra información visual digital", "h. Emiten sonido", "i. Muestra video e imágenes", "j. Presenta información visual en panel"], ans: 3},
+    {q: "5. Audífonos", opts: ["a. Imprime en papel", "b. Reproduce sonido", "c. Muestra imágenes y texto", "d. Proyecta imágenes en pantalla grande", "e. Permiten escuchar audio individualmente", "f. Imprime planos de gran tamaño", "g. Muestra información visual digital", "h. Emiten sonido", "i. Muestra video e imágenes", "j. Presenta información visual en panel"], ans: 4},
+    {q: "6. Plotter", opts: ["a. Imprime en papel", "b. Reproduce sonido", "c. Muestra imágenes y texto", "d. Proyecta imágenes en pantalla grande", "e. Permiten escuchar audio individualmente", "f. Imprime planos de gran tamaño", "g. Muestra información visual digital", "h. Emiten sonido", "i. Muestra video e imágenes", "j. Presenta información visual en panel"], ans: 5},
+    {q: "7. Pantalla LED", opts: ["a. Imprime en papel", "b. Reproduce sonido", "c. Muestra imágenes y texto", "d. Proyecta imágenes en pantalla grande", "e. Permiten escuchar audio individualmente", "f. Imprime planos de gran tamaño", "g. Muestra información visual digital", "h. Emiten sonido", "i. Muestra video e imágenes", "j. Presenta información visual en panel"], ans: 6},
+    {q: "8. Bocinas", opts: ["a. Imprime en papel", "b. Reproduce sonido", "c. Muestra imágenes y texto", "d. Proyecta imágenes en pantalla grande", "e. Permiten escuchar audio individualmente", "f. Imprime planos de gran tamaño", "g. Muestra información visual digital", "h. Emiten sonido", "i. Muestra video e imágenes", "j. Presenta información visual en panel"], ans: 7},
+    {q: "9. Televisor", opts: ["a. Imprime en papel", "b. Reproduce sonido", "c. Muestra imágenes y texto", "d. Proyecta imágenes en pantalla grande", "e. Permiten escuchar audio individualmente", "f. Imprime planos de gran tamaño", "g. Muestra información visual digital", "h. Emiten sonido", "i. Muestra video e imágenes", "j. Presenta información visual en panel"], ans: 8},
+    {q: "10. Display digital", opts: ["a. Imprime en papel", "b. Reproduce sonido", "c. Muestra imágenes y texto", "d. Proyecta imágenes en pantalla grande", "e. Permiten escuchar audio individualmente", "f. Imprime planos de gran tamaño", "g. Muestra información visual digital", "h. Emiten sonido", "i. Muestra video e imágenes", "j. Presenta información visual en panel"], ans: 9}
+];
 
-    const mcData = [
-      {q:"¿Cuál es un dispositivo de salida?", opts:["Teclado","Mouse","Monitor","Escáner"], ans:2},
-      {q:"¿Qué dispositivo permite imprimir documentos?", opts:["Monitor","Impresora","Parlantes","Cámara"], ans:1},
-      {q:"¿Cuál dispositivo reproduce sonido?", opts:["Teclado","Micrófono","Parlantes","Mouse"], ans:2},
-      {q:"¿Qué dispositivo muestra imágenes en pantalla?", opts:["Monitor","CPU","Disco duro","Router"], ans:0},
-      {q:"¿Cuál de estos es un dispositivo de salida visual?", opts:["Escáner","Monitor","Teclado","Mouse"], ans:1},
-      {q:"¿Qué dispositivo convierte información digital en sonido?", opts:["Impresora","Parlantes","Pantalla","Cámara"], ans:1},
-      {q:"¿Cuál NO es un dispositivo de salida?", opts:["Monitor","Impresora","Teclado","Parlantes"], ans:2},
-      {q:"¿Qué dispositivo permite ver videos desde el computador?", opts:["Monitor","Mouse","Micrófono","Escáner"], ans:0},
-      {q:"¿Cuál de estos dispositivos puede ser de entrada y salida?", opts:["Monitor táctil","Parlantes","Impresora","Bocinas"], ans:0},
-      {q:"¿Qué dispositivo imprime planos grandes (ingeniería/diseño)?", opts:["Monitor","Plotter","Mouse","Teclado"], ans:1}
-    ];
+const mcData = [
+    {q: "¿Cuál es un dispositivo de salida?", opts: ["A) Teclado", "B) Mouse", "C) Monitor", "D) Escáner"], ans: 2},
+    {q: "¿Qué dispositivo permite imprimir documentos?", opts: ["A) Monitor", "B) Impresora", "C) Parlantes", "D) Cámara"], ans: 1},
+    {q: "¿Cuál dispositivo reproduce sonido?", opts: ["A) Teclado", "B) Micrófono", "C) Parlantes", "D) Mouse"], ans: 2},
+    {q: "¿Qué dispositivo muestra imágenes en pantalla?", opts: ["A) Monitor", "B) CPU", "C) Disco duro", "D) Router"], ans: 0},
+    {q: "¿Cuál de estos es un dispositivo de salida visual?", opts: ["A) Escáner", "B) Monitor", "C) Teclado", "D) Mouse"], ans: 1},
+    {q: "¿Qué dispositivo convierte información digital en sonido?", opts: ["A) Impresora", "B) Parlantes", "C) Pantalla", "D) Cámara"], ans: 1},
+    {q: "¿Cuál NO es un dispositivo de salida?", opts: ["A) Monitor", "B) Impresora", "C) Teclado", "D) Parlantes"], ans: 2},
+    {q: "¿Qué dispositivo permite ver videos desde el computador?", opts: ["A) Monitor", "B) Mouse", "C) Micrófono", "D) Escáner"], ans: 0},
+    {q: "¿Cuál de estos dispositivos puede ser de entrada y salida?", opts: ["A) Monitor táctil", "B) Parlantes", "C) Impresora", "D) Bocinas"], ans: 0},
+    {q: "¿Qué dispositivo imprime planos grandes (ingeniería/diseño)?", opts: ["A) Monitor", "B) Plotter", "C) Mouse", "D) Teclado"], ans: 1}
+];
 
-    const clsData = ["Monitor","Teclado","Impresora","Mouse","Parlantes","Micrófono","Escáner","Audífonos","Cámara web","Proyector"];
-    const clsAns = ["S","E","S","E","S","E","E","S","E","S"];
-    const wsWords = ["HARDWARE","COMPUTADOR","TECLADO","MOUSE","ESCANER","MICROFONO","CAMARA","MONITOR","IMPRESORA","PARLANTES","AUDIFONOS","PROYECTOR","TOUCH","TABLET"];
+const clsData = [
+    {q: "Monitor", ans: "Salida"},
+    {q: "Teclado", ans: "Entrada"},
+    {q: "Impresora", ans: "Salida"},
+    {q: "Mouse", ans: "Entrada"},
+    {q: "Parlantes", ans: "Salida"},
+    {q: "Micrófono", ans: "Entrada"},
+    {q: "Escáner", ans: "Entrada"},
+    {q: "Audífonos", ans: "Salida"},
+    {q: "Cámara web", ans: "Entrada"},
+    {q: "Proyector", ans: "Salida"}
+];
 
-    // ESTADO
-    const st = { att:{}, lock:{}, wsAtt:0, wsFound:new Set(), wsSel:[], scores:{m:0,mc:0,c:0,ws:0} };
+const wsWords = ["HARDWARE", "COMPUTADOR", "TECLADO", "MOUSE", "ESCANER", "MICROFONO", "CAMARA", "MONITOR", "IMPRESORA", "PARLANTES", "AUDIFONOS", "PROYECTOR", "TOUCH", "TABLET"];
 
-    // RENDERIZAR
-    function renderMatch() {
-      const box = document.getElementById('match-box');
-      matchData.forEach((it,i) => {
-        const id = `m${i}`;
-        let opts = `<option value="">Selecciona...</option>`;
-        for(let k in it.opts) opts += `<option value="${k}">${it.opts[k]}</option>`;
-        box.innerHTML += `<div class="q-row"><label>${it.q}</label><select id="${id}">${opts}</select><span class="att" id="att_${id}">Intentos: 0/2</span><button class="btn-v" onclick="chk('${id}','${it.ans}',2)">Verificar</button><div id="fb_${id}" class="fb"></div></div>`;
-      });
-    }
+// ESTADO
+let state = {
+    match: {},
+    mc: {},
+    cls: {},
+    ws: { selectedCells: [], foundWords: [], attempts: 0 }
+};
 
-    function renderMC() {
-      const box = document.getElementById('mc-box');
-      mcData.forEach((it,i) => {
-        const id = `mc${i}`;
-        let html = `<div class="q-row"><label>${i+1}. ${it.q}</label><div class="opts">`;
-        it.opts.forEach((o,j) => html += `<label><input type="radio" name="${id}" value="${j}"> ${String.fromCharCode(65+j)}) ${o}</label>`);
-        html += `</div><span class="att" id="att_${id}">Intentos: 0/2</span><button class="btn-v" onclick="chkMC('${id}',${it.ans},4)">Verificar</button><div id="fb_${id}" class="fb"></div></div>`;
-        box.innerHTML += html;
-      });
-    }
+// RENDERIZAR EMPAREJAMIENTO
+function renderMatch() {
+    const container = document.getElementById('match-container');
+    matchData.forEach((item, index) => {
+        const id = `match_${index}`;
+        let optionsHtml = `<option value="">Selecciona una opción...</option>`;
+        item.opts.forEach((opt, i) => {
+            optionsHtml += `<option value="${i}">${opt}</option>`;
+        });
+        const html = `
+            <div class="question-item">
+                <div class="question-text">${item.q}</div>
+                <select id="${id}">${optionsHtml}</select>
+                <button class="btn-verify" onclick="verifyMatch('${id}', ${item.ans}, 2)">Verificar</button>
+                <div id="fb_${id}" class="feedback"></div>
+            </div>
+        `;
+        container.innerHTML += html;
+    });
+}
 
-    function renderCLS() {
-      const box = document.getElementById('cls-box');
-      clsData.forEach((d,i) => {
-        const id = `c${i}`;
-        box.innerHTML += `<div class="q-row"><label>${d}</label><select id="${id}"><option value="">Selecciona...</option><option value="E">Entrada (E)</option><option value="S">Salida (S)</option></select><span class="att" id="att_${id}">Intentos: 0/2</span><button class="btn-v" onclick="chk('${id}','${clsAns[i]}',2)">Verificar</button><div id="fb_${id}" class="fb"></div></div>`;
-      });
-    }
+// RENDERIZAR SELECCIÓN MÚLTIPLE
+function renderMC() {
+    const container = document.getElementById('mc-container');
+    mcData.forEach((item, index) => {
+        const id = `mc_${index}`;
+        let optionsHtml = '';
+        item.opts.forEach((opt, i) => {
+            optionsHtml += `<label><input type="radio" name="${id}" value="${i}"> ${opt}</label>`;
+        });
+        const html = `
+            <div class="question-item">
+                <div class="question-text">${index + 1}. ${item.q}</div>
+                <div class="options">${optionsHtml}</div>
+                <button class="btn-verify" onclick="verifyMC('${id}', ${item.ans}, 4)">Verificar</button>
+                <div id="fb_${id}" class="feedback"></div>
+            </div>
+        `;
+        container.innerHTML += html;
+    });
+}
 
-    // LÓGICA 2 INTENTOS
-    function chk(id, ans, pts) {
-      if(st.lock[id] || st.att[id]>=2) return;
-      const val = document.getElementById(id).value;
-      if(!val) return alert("Selecciona una opción.");
-      st.att[id] = (st.att[id]||0)+1;
-      document.getElementById(`att_${id}`).textContent = `Intentos: ${st.att[id]}/2`;
-      const fb = document.getElementById(`fb_${id}`);
-      const sel = document.getElementById(id);
-      const btn = sel.nextElementSibling.nextElementSibling;
-      if(val === ans) {
-        fb.textContent="✅ Correcto"; fb.className="fb ok";
-        st.lock[id]=true; sel.disabled=true; btn.disabled=true;
-        st.scores.m += pts;
-      } else {
-        if(st.att[id]>=2) {
-          fb.textContent=`❌ Fallido. Correcto: ${ans.toUpperCase()}`; fb.className="fb no";
-          st.lock[id]=true; sel.disabled=true; btn.disabled=true;
+// RENDERIZAR CLASIFICACIÓN
+function renderCLS() {
+    const container = document.getElementById('cls-container');
+    clsData.forEach((item, index) => {
+        const id = `cls_${index}`;
+        const html = `
+            <div class="question-item">
+                <div class="question-text">${item.q}</div>
+                <select id="${id}">
+                    <option value="">Selecciona...</option>
+                    <option value="Entrada">Entrada (E)</option>
+                    <option value="Salida">Salida (S)</option>
+                </select>
+                <button class="btn-verify" onclick="verifyCLS('${id}', '${item.ans}', 2)">Verificar</button>
+                <div id="fb_${id}" class="feedback"></div>
+            </div>
+        `;
+        container.innerHTML += html;
+    });
+}
+
+// VERIFICAR EMPAREJAMIENTO
+window.verifyMatch = function(id, correctVal, pts) {
+    if (state.match[id] && state.match[id].locked) return;
+    const select = document.getElementById(id);
+    const val = select.value;
+    const fb = document.getElementById(`fb_${id}`);
+    if (val === "") return alert("Por favor selecciona una opción.");
+    if (!state.match[id]) state.match[id] = { attempts: 0 };
+    state.match[id].attempts++;
+    if (parseInt(val) === correctVal) {
+        fb.textContent = "✅ ¡Correcto!";
+        fb.className = "feedback correct";
+        state.match[id].locked = true;
+        state.match[id].score = pts;
+        select.disabled = true;
+        select.nextElementSibling.disabled = true;
+    } else {
+        if (state.match[id].attempts >= 2) {
+            fb.textContent = `❌ Incorrecto. La respuesta correcta era la opción ${String.fromCharCode(97 + correctVal)}.`;
+            fb.className = "feedback incorrect";
+            state.match[id].locked = true;
+            select.disabled = true;
+            select.nextElementSibling.disabled = true;
         } else {
-          fb.textContent="⚠️ Incorrecto. 1 intento restante."; fb.className="fb warn";
+            fb.textContent = "⚠️ Incorrecto. Te queda 1 intento más.";
+            fb.className = "feedback warning";
         }
-      }
     }
+};
 
-    function chkMC(id, ans, pts) {
-      if(st.lock[id] || st.att[id]>=2) return;
-      const sel = document.querySelector(`input[name="${id}"]:checked`);
-      if(!sel) return alert("Selecciona una opción.");
-      st.att[id] = (st.att[id]||0)+1;
-      document.getElementById(`att_${id}`).textContent = `Intentos: ${st.att[id]}/2`;
-      const fb = document.getElementById(`fb_${id}`);
-      const btn = document.querySelector(`input[name="${id}"]`).closest('.q-row').querySelector('.btn-v');
-      if(parseInt(sel.value) === ans) {
-        fb.textContent="✅ Correcto"; fb.className="fb ok";
-        st.lock[id]=true; btn.disabled=true;
-        document.querySelectorAll(`input[name="${id}"]`).forEach(i=>i.disabled=true);
-        st.scores.mc += pts;
-      } else {
-        if(st.att[id]>=2) {
-          fb.textContent=`❌ Fallido. Correcto: ${String.fromCharCode(65+ans)}`; fb.className="fb no";
-          st.lock[id]=true; btn.disabled=true;
-          document.querySelectorAll(`input[name="${id}"]`).forEach(i=>i.disabled=true);
+// VERIFICAR SELECCIÓN MÚLTIPLE
+window.verifyMC = function(id, correctVal, pts) {
+    if (state.mc[id] && state.mc[id].locked) return;
+    const selected = document.querySelector(`input[name="${id}"]:checked`);
+    if (!selected) return alert("Por favor selecciona una respuesta.");
+    const val = selected.value;
+    const fb = document.getElementById(`fb_${id}`);
+    if (!state.mc[id]) state.mc[id] = { attempts: 0 };
+    state.mc[id].attempts++;
+    if (parseInt(val) === correctVal) {
+        fb.textContent = "✅ ¡Correcto!";
+        fb.className = "feedback correct";
+        state.mc[id].locked = true;
+        state.mc[id].score = pts;
+        document.querySelectorAll(`input[name="${id}"]`).forEach(inp => inp.disabled = true);
+        selected.closest('.question-item').querySelector('.btn-verify').disabled = true;
+    } else {
+        if (state.mc[id].attempts >= 2) {
+            fb.textContent = `❌ Incorrecto. La respuesta correcta era: ${mcData[parseInt(id.split('_')[1])].opts[correctVal]}`;
+            fb.className = "feedback incorrect";
+            state.mc[id].locked = true;
+            document.querySelectorAll(`input[name="${id}"]`).forEach(inp => inp.disabled = true);
+            selected.closest('.question-item').querySelector('.btn-verify').disabled = true;
         } else {
-          fb.textContent="⚠️ Incorrecto. 1 intento restante."; fb.className="fb warn";
+            fb.textContent = "⚠️ Incorrecto. Te queda 1 intento más.";
+            fb.className = "feedback warning";
         }
-      }
+    }
+};
+
+// VERIFICAR CLASIFICACIÓN
+window.verifyCLS = function(id, correctVal, pts) {
+    if (state.cls[id] && state.cls[id].locked) return;
+    const select = document.getElementById(id);
+    const val = select.value;
+    const fb = document.getElementById(`fb_${id}`);
+    if (val === "") return alert("Por favor selecciona una opción.");
+    if (!state.cls[id]) state.cls[id] = { attempts: 0 };
+    state.cls[id].attempts++;
+    if (val === correctVal) {
+        fb.textContent = "✅ ¡Correcto!";
+        fb.className = "feedback correct";
+        state.cls[id].locked = true;
+        state.cls[id].score = pts;
+        select.disabled = true;
+        select.nextElementSibling.disabled = true;
+    } else {
+        if (state.cls[id].attempts >= 2) {
+            fb.textContent = `❌ Incorrecto. Es de tipo: ${correctVal}.`;
+            fb.className = "feedback incorrect";
+            state.cls[id].locked = true;
+            select.disabled = true;
+            select.nextElementSibling.disabled = true;
+        } else {
+            fb.textContent = "⚠️ Incorrecto. Te queda 1 intento más.";
+            fb.className = "feedback warning";
+        }
+    }
+};
+
+// INICIALIZAR SOPA DE LETRAS
+function initWordSearch() {
+    const size = 20;
+    const grid = document.getElementById('ws-grid');
+    const wordList = document.getElementById('word-list');
+    let matrix = Array(size).fill(null).map(() => Array(size).fill(''));
+
+    wsWords.forEach(word => {
+        let placed = false;
+        while (!placed) {
+            const dir = Math.random() > 0.5 ? 'H' : 'V';
+            const r = Math.floor(Math.random() * size);
+            const c = Math.floor(Math.random() * size);
+            let fits = true;
+            for (let i = 0; i < word.length; i++) {
+                let nr = r + (dir === 'V' ? i : 0);
+                let nc = c + (dir === 'H' ? i : 0);
+                if (nr >= size || nc >= size || (matrix[nr][nc] !== '' && matrix[nr][nc] !== word[i])) {
+                    fits = false;
+                    break;
+                }
+            }
+            if (fits) {
+                for (let i = 0; i < word.length; i++) {
+                    let nr = r + (dir === 'V' ? i : 0);
+                    let nc = c + (dir === 'H' ? i : 0);
+                    matrix[nr][nc] = word[i];
+                }
+                placed = true;
+            }
+        }
+    });
+
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+            if (matrix[i][j] === '') {
+                matrix[i][j] = letters[Math.floor(Math.random() * 26)];
+            }
+            const cell = document.createElement('div');
+            cell.className = 'ws-cell';
+            cell.textContent = matrix[i][j];
+            cell.dataset.r = i;
+            cell.dataset.c = j;
+            cell.onclick = () => toggleCell(cell);
+            grid.appendChild(cell);
+        }
     }
 
-    // SOPA DE LETRAS 20x20
-    function initWS() {
-      const size=20, g=Array(size).fill(null).map(()=>Array(size).fill(''));
-      const dirs=[[0,1],[1,0]];
-      wsWords.forEach(w=>{
-        let ok=false;
-        while(!ok){
-          const d=dirs[Math.floor(Math.random()*2)], r=Math.floor(Math.random()*size), c=Math.floor(Math.random()*size);
-          let valid=true;
-          for(let i=0;i<w.length;i++){
-            const nr=r+d[0]*i, nc=c+d[1]*i;
-            if(nr<0||nr>=size||nc<0||nc>=size||(g[nr][nc]!==''&&g[nr][nc]!==w[i])){valid=false;break;}
-          }
-          if(valid){for(let i=0;i<w.length;i++) g[r+d[0]*i][c+d[1]*i]=w[i]; ok=true;}
-        }
-      });
-      const alpha="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-      for(let i=0;i<size;i++) for(let j=0;j<size;j++) if(g[i][j]==='') g[i][j]=alpha[Math.floor(Math.random()*26)];
-      
-      const ge=document.getElementById('wg');
-      for(let i=0;i<size;i++) for(let j=0;j<size;j++){
-        const c=document.createElement('div'); c.className='ws-cell'; c.textContent=g[i][j];
-        c.onclick=()=>toggleWS(c); ge.appendChild(c);
-      }
-      const wl=document.getElementById('wl');
-      wsWords.forEach(w=>{ const t=document.createElement('span'); t.className='wt'; t.id=`t-${w}`; t.textContent=w; wl.appendChild(t); });
-    }
+    wsWords.forEach(word => {
+        const tag = document.createElement('div');
+        tag.className = 'word-tag';
+        tag.id = `tag-${word}`;
+        tag.textContent = word;
+        wordList.appendChild(tag);
+    });
+}
 
-    function toggleWS(c){ if(c.classList.contains('found')) return; c.classList.contains('sel')?c.classList.remove('sel'):c.classList.add('sel'); }
+window.toggleCell = function(cell) {
+    if (cell.classList.contains('found')) return;
+    if (cell.classList.contains('selected')) {
+        cell.classList.remove('selected');
+        state.ws.selectedCells = state.ws.selectedCells.filter(c => c !== cell);
+    } else {
+        cell.classList.add('selected');
+        state.ws.selectedCells.push(cell);
+    }
+};
+
+window.checkWordSearch = function() {
+    const fb = document.getElementById('ws-feedback');
+    const btn = document.getElementById('ws-btn');
+    if (state.ws.attempts >= 2) {
+        fb.textContent = "⛔ Has agotado tus intentos de verificación.";
+        fb.className = "feedback incorrect";
+        return;
+    }
+    if (state.ws.selectedCells.length < 3) return alert("Selecciona al menos 3 letras para verificar.");
     
-    function verifyWS(){
-      const fb=document.getElementById('ws-fb'), btn=document.getElementById('ws-btn');
-      if(st.wsAtt>=2){ fb.textContent="⛔ Sin intentos restantes."; fb.className="fb no"; return; }
-      if(st.wsSel.length<3) return alert("Selecciona al menos 3 letras en orden.");
-      const w=st.wsSel.map(c=>c.textContent).join(''), rw=w.split('').reverse().join('');
-      const found=wsWords.find(x=>x===w||x===rw);
-      if(found && !st.wsFound.has(found)){
-        st.wsFound.add(found);
-        st.wsSel.forEach(c=>{c.classList.remove('sel');c.classList.add('found');});
-        document.getElementById(`t-${found}`).classList.add('found');
-        fb.textContent=`✅ ¡Encontraste: ${found}!`; fb.className="fb ok";
-        st.wsSel=[];
-        document.getElementById('ws-count').textContent=st.wsFound.size;
-      } else {
-        st.wsAtt++;
-        fb.textContent=st.wsAtt>=2?"❌ Intentos agotados.":"⚠️ Palabra no válida o ya encontrada. 1 intento restante.";
-        fb.className=st.wsAtt>=2?"fb no":"fb warn";
-        if(st.wsAtt>=2) btn.disabled=true;
-        st.wsSel.forEach(c=>c.classList.remove('sel')); st.wsSel=[];
-      }
-    }
+    const cells = state.ws.selectedCells.sort((a, b) => {
+        if (parseInt(a.dataset.r) !== parseInt(b.dataset.r)) return parseInt(a.dataset.r) - parseInt(b.dataset.r);
+        return parseInt(a.dataset.c) - parseInt(b.dataset.c);
+    });
+    
+    const word = cells.map(c => c.textContent).join('');
+    const wordReverse = word.split('').reverse().join('');
+    
+    let foundWord = null;
+    if (wsWords.includes(word)) foundWord = word;
+    else if (wsWords.includes(wordReverse)) foundWord = wordReverse;
 
-    // PUNTUACIÓN FINAL
-    function calcScore(){
-      let wsP=Math.round(st.wsFound.size*(20/14));
-      st.scores.ws=wsP;
-      const total=st.scores.m+st.scores.mc+st.scores.c+st.scores.ws;
-      const f=Math.min(100,total);
-      const nombre=document.getElementById('nombre').value || 'Estudiante';
-      const curso=document.getElementById('curso').value || 'Sin curso';
-      document.getElementById('score-top').innerHTML=`<div style="font-size:1.3rem">📊 CALIFICACIÓN: ${f}/100</div><div style="font-size:0.95rem; margin:5px 0;">${nombre} | ${curso}</div><div class="badge">Emparejamiento: ${st.scores.m}/20 | Selección: ${st.scores.mc}/40 | Clasificación: ${st.scores.c}/20 | Sopa: ${st.scores.ws}/20</div><div style="margin-top:8px;font-size:0.95rem">${f>=80?'🌟 Excelente':f>=60?'👍 Aprobado':'💡 Repasa la teoría'}</div>`;
-      document.getElementById('score-top').style.display='block';
-      window.scrollTo({top:0,behavior:'smooth'});
+    if (foundWord && !state.ws.foundWords.includes(foundWord)) {
+        state.ws.foundWords.push(foundWord);
+        cells.forEach(c => {
+            c.classList.remove('selected');
+            c.classList.add('found');
+        });
+        state.ws.selectedCells = [];
+        document.getElementById(`tag-${foundWord}`).classList.add('found');
+        fb.textContent = `🎉 ¡Encontraste: ${foundWord}!`;
+        fb.className = "feedback correct";
+        document.getElementById('ws-count').textContent = state.ws.foundWords.length;
+    } else {
+        state.ws.attempts++;
+        fb.textContent = state.ws.attempts >= 2 ? "❌ Incorrecto. No quedan más intentos de verificación." : "⚠️ Palabra no válida o ya encontrada. Te queda 1 intento.";
+        fb.className = state.ws.attempts >= 2 ? "feedback incorrect" : "feedback warning";
+        if (state.ws.attempts >= 2) btn.disabled = true;
+        state.ws.selectedCells.forEach(c => c.classList.remove('selected'));
+        state.ws.selectedCells = [];
     }
+};
 
-    window.onload=()=>{renderMatch();renderMC();renderCLS();initWS();};
-  </script>
+// CALCULAR PUNTUACIÓN FINAL
+window.calculateFinalScore = function() {
+    let total = 0;
+    Object.values(state.match).forEach(item => total += (item.score || 0));
+    Object.values(state.mc).forEach(item => total += (item.score || 0));
+    Object.values(state.cls).forEach(item => total += (item.score || 0));
+    const wsPoints = Math.round((state.ws.foundWords.length / wsWords.length) * 20);
+    total += wsPoints;
+
+    const nombre = document.getElementById('nombre').value || "Estudiante";
+    const curso = document.getElementById('curso').value || "Sin asignar";
+    
+    document.getElementById('final-score').textContent = `${total} / 100`;
+    document.getElementById('student-info').textContent = `${nombre} | Curso: ${curso}`;
+    
+    let msg = "";
+    if (total >= 90) msg = "🌟 ¡Excelente trabajo! Dominas el tema perfectamente.";
+    else if (total >= 70) msg = "👍 ¡Muy bien! Has aprobado la guía satisfactoriamente.";
+    else if (total >= 50) msg = "✅ Aprobado, pero necesitas repasar algunos conceptos.";
+    else msg = "⚠️ No aprobado. Te recomendamos estudiar la teoría nuevamente.";
+    
+    document.getElementById('feedback-msg').textContent = msg;
+    document.getElementById('score-box').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+// INICIALIZAR
+window.onload = function() {
+    renderMatch();
+    renderMC();
+    renderCLS();
+    initWordSearch();
+};
+</script>
+
 </body>
 </html>
