@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guía: Dispositivos de Entrada y Salida</title>
+  <style>
+    :root { --p:#2563eb; --ok:#16a34a; --err:#dc2626; --warn:#f59e0b; --bg:#f8fafc; --card:#fff; --txt:#1e293b; --brd:#cbd5e1; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 20px; line-height: 1.5; }
+    .container { max-width: 950px; margin: 0 auto; background: var(--card); padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: var(--p); margin-bottom: 5px; }
+    .sub { text-align: center; color: #64748b; margin-bottom: 20px; font-size: 0.9rem; }
+    .header-inputs { display: flex; gap: 15px; margin-bottom: 10px; flex-wrap: wrap; }
+    .header-inputs input { flex: 1; padding: 10px; border: 2px solid var(--brd); border-radius: 6px; font-size: 1rem; }
+    
+    #score-top { background: #fffbeb; border: 2px solid #d97706; padding: 12px; border-radius: 8px; text-align: center; margin: 10px 0 20px 0; font-weight: bold; font-size: 1.15rem; display: none; }
+    #score-top .badge { background: #fef3c7; padding: 4px 12px; border-radius: 12px; font-size: 0.85rem; margin-top: 6px; display: inline-block; }
+
+    .theory { background: #eff6ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid var(--p); font-size: 0.9rem; }
+    .theory h3 { margin-top: 0; color: var(--p); }
+    .theory p { margin: 6px 0; }
+
+    .section { background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+    .section h2 { margin-top: 0; color: var(--p); font-size: 1.25rem; border-bottom: 2px solid var(--p); padding-bottom: 8px; }
+    .q-row { display: flex; align-items: center; gap: 10px; margin: 10px 0; padding: 10px; background: white; border-radius: 6px; border: 1px solid #e2e8f0; flex-wrap: wrap; }
+    .q-row label { font-weight: 600; flex: 1; min-width: 150px; }
+    select { padding: 6px; border-radius: 4px; border: 1px solid var(--brd); font-size: 0.95rem; }
+    .opts { display: flex; flex-direction: column; gap: 4px; margin-left: 10px; }
+    .opts label { font-weight: normal; cursor: pointer; padding: 4px 8px; border-radius: 4px; }
+    .opts label:hover { background: #f1f5f9; }
+    .pts { background: #dbeafe; color: var(--p); padding: 2px 6px; border-radius: 8px; font-size: 0.75rem; font-weight: bold; }
+    .att { font-size: 0.8rem; color: #64748b; margin-left: auto; }
+    
+    .btn-v { background: var(--p); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; }
+    .btn-v:hover { background: #1d4ed8; }
+    .btn-v:disabled { background: #94a3b8; cursor: not-allowed; }
+    
+    .fb { padding: 6px 10px; border-radius: 4px; font-weight: 600; font-size: 0.85rem; display: none; margin-top: 5px; }
+    .fb.ok { background: #dcfce7; color: var(--ok); display: block; }
+    .fb.no { background: #fee2e2; color: var(--err); display: block; }
+    .fb.warn { background: #fef3c7; color: #b45309; display: block; }
+
+    .ws-wrap { text-align: center; }
+    .ws-grid { display: grid; grid-template-columns: repeat(20, 26px); gap: 2px; margin: 15px auto; width: fit-content; user-select: none; }
+    .ws-cell { width: 26px; height: 26px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 3px; cursor: pointer; font-size: 0.85rem; }
+    .ws-cell:hover { background: #cbd5e1; }
+    .ws-cell.sel { background: var(--p); color: white; }
+    .ws-cell.found { background: var(--ok); color: white; cursor: default; }
+    .wl { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 10px 0; }
+    .wt { background: #dbeafe; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; border: 1px solid #93c5fd; }
+    .wt.found { background: #bbf7d0; border-color: #86efac; text-decoration: line-through; color: #166534; }
+
+    .btn-main { background: #059669; color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; cursor: pointer; font-size: 1.1rem; margin-top: 15px; font-weight: bold; }
+    .btn-main:hover { background: #047857; }
+
+    @media print {
+      body { background: white; padding: 0; }
+      .container { box-shadow: none; padding: 15px; max-width: 100%; }
+      .btn-v, .btn-main, .fb, .att { display: none !important; }
+      #score-top { display: block !important; border: 2px solid #000; background: white !important; color: black !important; margin-bottom: 15px; }
+      select, input { border: 1px solid #000; background: white !important; color: black !important; }
+      .section { page-break-inside: avoid; }
+      .ws-cell { border: 1px solid #ccc; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔌 Dispositivos de Entrada y Salida</h1>
+    <div class="sub">Área: Tecnología e Informática | Máximo 2 intentos por pregunta</div>
+    <div class="header-inputs">
+      <input type="text" id="nombre" placeholder="Nombre del Estudiante">
+      <input type="text" id="curso" placeholder="Curso">
+      <input type="text" id="fecha" placeholder="Fecha">
+    </div>
+    
+    <div id="score-top"></div>
+
+    <div class="theory">
+      <h3>📘 Repaso Rápido</h3>
+      <p><strong>Entrada (E):</strong> Envían datos al computador (Teclado, Mouse, Micrófono, Escáner, Cámara).</p>
+      <p><strong>Salida (S):</strong> Reciben y muestran datos del computador (Monitor, Impresora, Parlantes, Audífonos, Proyector).</p>
+      <p><strong>Entrada/Salida (E/S):</strong> Hacen ambas funciones (Monitor Táctil, Memorias USB, Módem).</p>
+    </div>
+
+    <div class="section">
+      <h2>🔗 Actividad 1: Emparejamiento <span class="pts">20 pts</span></h2>
+      <p>Selecciona la función correcta para cada dispositivo.</p>
+      <div id="match-box"></div>
+    </div>
+
+    <div class="section">
+      <h2>❓ Actividad 2: Selección Múltiple <span class="pts">40 pts</span></h2>
+      <p>Marca la respuesta correcta.</p>
+      <div id="mc-box"></div>
+    </div>
+
+    <div class="section">
+      <h2>📋 Actividad 3: Clasificación Entrada (E) o Salida (S) <span class="pts">20 pts</span></h2>
+      <p>Indica si cada dispositivo es de Entrada o Salida.</p>
+      <div id="cls-box"></div>
+    </div>
+
+    <div class="section">
+      <h2>🔍 Actividad 4: Sopa de Letras <span class="pts">20 pts</span></h2>
+      <p>Encuentra las 14 palabras. Haz clic en las letras en orden y presiona <strong>Verificar</strong>. <span style="color:var(--warn)">️ Solo 2 verificaciones permitidas.</span></p>
+      <div class="ws-wrap">
+        <div class="wl" id="wl"></div>
+        <div class="ws-grid" id="wg"></div>
+        <button class="btn-v" id="ws-btn" onclick="verifyWS()">🔍 Verificar Selección</button>
+        <div id="ws-fb" class="fb"></div>
+        <p style="margin-top:10px;">Palabras encontradas: <span id="ws-count">0</span>/14</p>
+      </div>
+    </div>
+
+    <button class="btn-main" onclick="calcScore()"> Calificar y Preparar PDF</button>
+    <button class="btn-main" onclick="window.print()" style="margin-top:10px; background:#64748b;">🖨️ Guardar como PDF / Imprimir</button>
+  </div>
+
+  <script>
+    // DATOS EXACTOS DEL DOCUMENTO
+    const matchOpts = {a:"a. Imprime en papel",b:"b. Reproduce sonido",c:"c. Muestra imágenes y texto",d:"d. Proyecta imágenes en pantalla grande",e:"e. Permiten escuchar audio individualmente",f:"f. Imprime planos de gran tamaño",g:"g. Muestra información visual digital",h:"h. Emiten sonido",i:"i. Muestra video e imágenes",j:"j. Presenta información visual en panel"};
+    const matchData = [
+      {q:"1. Monitor", opts:matchOpts, ans:"c"}, {q:"2. Impresora", opts:matchOpts, ans:"a"}, {q:"3. Parlantes", opts:matchOpts, ans:"b"},
+      {q:"4. Proyector", opts:matchOpts, ans:"d"}, {q:"5. Audífonos", opts:matchOpts, ans:"e"}, {q:"6. Plotter", opts:matchOpts, ans:"f"},
+      {q:"7. Pantalla LED", opts:matchOpts, ans:"g"}, {q:"8. Bocinas", opts:matchOpts, ans:"h"}, {q:"9. Televisor", opts:matchOpts, ans:"i"},
+      {q:"10. Display digital", opts:matchOpts, ans:"j"}
+    ];
+
+    const mcData = [
+      {q:"¿Cuál es un dispositivo de salida?", opts:["Teclado","Mouse","Monitor","Escáner"], ans:2},
+      {q:"¿Qué dispositivo permite imprimir documentos?", opts:["Monitor","Impresora","Parlantes","Cámara"], ans:1},
+      {q:"¿Cuál dispositivo reproduce sonido?", opts:["Teclado","Micrófono","Parlantes","Mouse"], ans:2},
+      {q:"¿Qué dispositivo muestra imágenes en pantalla?", opts:["Monitor","CPU","Disco duro","Router"], ans:0},
+      {q:"¿Cuál de estos es un dispositivo de salida visual?", opts:["Escáner","Monitor","Teclado","Mouse"], ans:1},
+      {q:"¿Qué dispositivo convierte información digital en sonido?", opts:["Impresora","Parlantes","Pantalla","Cámara"], ans:1},
+      {q:"¿Cuál NO es un dispositivo de salida?", opts:["Monitor","Impresora","Teclado","Parlantes"], ans:2},
+      {q:"¿Qué dispositivo permite ver videos desde el computador?", opts:["Monitor","Mouse","Micrófono","Escáner"], ans:0},
+      {q:"¿Cuál de estos dispositivos puede ser de entrada y salida?", opts:["Monitor táctil","Parlantes","Impresora","Bocinas"], ans:0},
+      {q:"¿Qué dispositivo imprime planos grandes (ingeniería/diseño)?", opts:["Monitor","Plotter","Mouse","Teclado"], ans:1}
+    ];
+
+    const clsData = ["Monitor","Teclado","Impresora","Mouse","Parlantes","Micrófono","Escáner","Audífonos","Cámara web","Proyector"];
+    const clsAns = ["S","E","S","E","S","E","E","S","E","S"];
+    const wsWords = ["HARDWARE","COMPUTADOR","TECLADO","MOUSE","ESCANER","MICROFONO","CAMARA","MONITOR","IMPRESORA","PARLANTES","AUDIFONOS","PROYECTOR","TOUCH","TABLET"];
+
+    // ESTADO
+    const st = { att:{}, lock:{}, wsAtt:0, wsFound:new Set(), wsSel:[], scores:{m:0,mc:0,c:0,ws:0} };
+
+    // RENDERIZAR
+    function renderMatch() {
+      const box = document.getElementById('match-box');
+      matchData.forEach((it,i) => {
+        const id = `m${i}`;
+        let opts = `<option value="">Selecciona...</option>`;
+        for(let k in it.opts) opts += `<option value="${k}">${it.opts[k]}</option>`;
+        box.innerHTML += `<div class="q-row"><label>${it.q}</label><select id="${id}">${opts}</select><span class="att" id="att_${id}">Intentos: 0/2</span><button class="btn-v" onclick="chk('${id}','${it.ans}',2)">Verificar</button><div id="fb_${id}" class="fb"></div></div>`;
+      });
+    }
+
+    function renderMC() {
+      const box = document.getElementById('mc-box');
+      mcData.forEach((it,i) => {
+        const id = `mc${i}`;
+        let html = `<div class="q-row"><label>${i+1}. ${it.q}</label><div class="opts">`;
+        it.opts.forEach((o,j) => html += `<label><input type="radio" name="${id}" value="${j}"> ${String.fromCharCode(65+j)}) ${o}</label>`);
+        html += `</div><span class="att" id="att_${id}">Intentos: 0/2</span><button class="btn-v" onclick="chkMC('${id}',${it.ans},4)">Verificar</button><div id="fb_${id}" class="fb"></div></div>`;
+        box.innerHTML += html;
+      });
+    }
+
+    function renderCLS() {
+      const box = document.getElementById('cls-box');
+      clsData.forEach((d,i) => {
+        const id = `c${i}`;
+        box.innerHTML += `<div class="q-row"><label>${d}</label><select id="${id}"><option value="">Selecciona...</option><option value="E">Entrada (E)</option><option value="S">Salida (S)</option></select><span class="att" id="att_${id}">Intentos: 0/2</span><button class="btn-v" onclick="chk('${id}','${clsAns[i]}',2)">Verificar</button><div id="fb_${id}" class="fb"></div></div>`;
+      });
+    }
+
+    // LÓGICA 2 INTENTOS
+    function chk(id, ans, pts) {
+      if(st.lock[id] || st.att[id]>=2) return;
+      const val = document.getElementById(id).value;
+      if(!val) return alert("Selecciona una opción.");
+      st.att[id] = (st.att[id]||0)+1;
+      document.getElementById(`att_${id}`).textContent = `Intentos: ${st.att[id]}/2`;
+      const fb = document.getElementById(`fb_${id}`);
+      const sel = document.getElementById(id);
+      const btn = sel.nextElementSibling.nextElementSibling;
+      if(val === ans) {
+        fb.textContent="✅ Correcto"; fb.className="fb ok";
+        st.lock[id]=true; sel.disabled=true; btn.disabled=true;
+        st.scores.m += pts;
+      } else {
+        if(st.att[id]>=2) {
+          fb.textContent=`❌ Fallido. Correcto: ${ans.toUpperCase()}`; fb.className="fb no";
+          st.lock[id]=true; sel.disabled=true; btn.disabled=true;
+        } else {
+          fb.textContent="⚠️ Incorrecto. 1 intento restante."; fb.className="fb warn";
+        }
+      }
+    }
+
+    function chkMC(id, ans, pts) {
+      if(st.lock[id] || st.att[id]>=2) return;
+      const sel = document.querySelector(`input[name="${id}"]:checked`);
+      if(!sel) return alert("Selecciona una opción.");
+      st.att[id] = (st.att[id]||0)+1;
+      document.getElementById(`att_${id}`).textContent = `Intentos: ${st.att[id]}/2`;
+      const fb = document.getElementById(`fb_${id}`);
+      const btn = document.querySelector(`input[name="${id}"]`).closest('.q-row').querySelector('.btn-v');
+      if(parseInt(sel.value) === ans) {
+        fb.textContent="✅ Correcto"; fb.className="fb ok";
+        st.lock[id]=true; btn.disabled=true;
+        document.querySelectorAll(`input[name="${id}"]`).forEach(i=>i.disabled=true);
+        st.scores.mc += pts;
+      } else {
+        if(st.att[id]>=2) {
+          fb.textContent=`❌ Fallido. Correcto: ${String.fromCharCode(65+ans)}`; fb.className="fb no";
+          st.lock[id]=true; btn.disabled=true;
+          document.querySelectorAll(`input[name="${id}"]`).forEach(i=>i.disabled=true);
+        } else {
+          fb.textContent="⚠️ Incorrecto. 1 intento restante."; fb.className="fb warn";
+        }
+      }
+    }
+
+    // SOPA DE LETRAS 20x20
+    function initWS() {
+      const size=20, g=Array(size).fill(null).map(()=>Array(size).fill(''));
+      const dirs=[[0,1],[1,0]];
+      wsWords.forEach(w=>{
+        let ok=false;
+        while(!ok){
+          const d=dirs[Math.floor(Math.random()*2)], r=Math.floor(Math.random()*size), c=Math.floor(Math.random()*size);
+          let valid=true;
+          for(let i=0;i<w.length;i++){
+            const nr=r+d[0]*i, nc=c+d[1]*i;
+            if(nr<0||nr>=size||nc<0||nc>=size||(g[nr][nc]!==''&&g[nr][nc]!==w[i])){valid=false;break;}
+          }
+          if(valid){for(let i=0;i<w.length;i++) g[r+d[0]*i][c+d[1]*i]=w[i]; ok=true;}
+        }
+      });
+      const alpha="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      for(let i=0;i<size;i++) for(let j=0;j<size;j++) if(g[i][j]==='') g[i][j]=alpha[Math.floor(Math.random()*26)];
+      
+      const ge=document.getElementById('wg');
+      for(let i=0;i<size;i++) for(let j=0;j<size;j++){
+        const c=document.createElement('div'); c.className='ws-cell'; c.textContent=g[i][j];
+        c.onclick=()=>toggleWS(c); ge.appendChild(c);
+      }
+      const wl=document.getElementById('wl');
+      wsWords.forEach(w=>{ const t=document.createElement('span'); t.className='wt'; t.id=`t-${w}`; t.textContent=w; wl.appendChild(t); });
+    }
+
+    function toggleWS(c){ if(c.classList.contains('found')) return; c.classList.contains('sel')?c.classList.remove('sel'):c.classList.add('sel'); }
+    
+    function verifyWS(){
+      const fb=document.getElementById('ws-fb'), btn=document.getElementById('ws-btn');
+      if(st.wsAtt>=2){ fb.textContent="⛔ Sin intentos restantes."; fb.className="fb no"; return; }
+      if(st.wsSel.length<3) return alert("Selecciona al menos 3 letras en orden.");
+      const w=st.wsSel.map(c=>c.textContent).join(''), rw=w.split('').reverse().join('');
+      const found=wsWords.find(x=>x===w||x===rw);
+      if(found && !st.wsFound.has(found)){
+        st.wsFound.add(found);
+        st.wsSel.forEach(c=>{c.classList.remove('sel');c.classList.add('found');});
+        document.getElementById(`t-${found}`).classList.add('found');
+        fb.textContent=`✅ ¡Encontraste: ${found}!`; fb.className="fb ok";
+        st.wsSel=[];
+        document.getElementById('ws-count').textContent=st.wsFound.size;
+      } else {
+        st.wsAtt++;
+        fb.textContent=st.wsAtt>=2?"❌ Intentos agotados.":"⚠️ Palabra no válida o ya encontrada. 1 intento restante.";
+        fb.className=st.wsAtt>=2?"fb no":"fb warn";
+        if(st.wsAtt>=2) btn.disabled=true;
+        st.wsSel.forEach(c=>c.classList.remove('sel')); st.wsSel=[];
+      }
+    }
+
+    // PUNTUACIÓN FINAL
+    function calcScore(){
+      let wsP=Math.round(st.wsFound.size*(20/14));
+      st.scores.ws=wsP;
+      const total=st.scores.m+st.scores.mc+st.scores.c+st.scores.ws;
+      const f=Math.min(100,total);
+      const nombre=document.getElementById('nombre').value || 'Estudiante';
+      const curso=document.getElementById('curso').value || 'Sin curso';
+      document.getElementById('score-top').innerHTML=`<div style="font-size:1.3rem">📊 CALIFICACIÓN: ${f}/100</div><div style="font-size:0.95rem; margin:5px 0;">${nombre} | ${curso}</div><div class="badge">Emparejamiento: ${st.scores.m}/20 | Selección: ${st.scores.mc}/40 | Clasificación: ${st.scores.c}/20 | Sopa: ${st.scores.ws}/20</div><div style="margin-top:8px;font-size:0.95rem">${f>=80?'🌟 Excelente':f>=60?'👍 Aprobado':'💡 Repasa la teoría'}</div>`;
+      document.getElementById('score-top').style.display='block';
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    window.onload=()=>{renderMatch();renderMC();renderCLS();initWS();};
+  </script>
+</body>
+</html>
