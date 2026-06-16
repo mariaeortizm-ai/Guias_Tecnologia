@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía: Sistemas Operativos - Grado Sexto</title>
+    <style>
+        :root { --primary: #4361ee; --secondary: #3f37c9; --success: #4cc9f0; --bg: #f8f9fa; --card: #ffffff; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #e0e7ff 0%, #f8f9fa 100%); color: #1e293b; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: var(--card); padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        
+        h1 { text-align: center; color: var(--primary); margin-bottom: 10px; }
+        .subtitle { text-align: center; color: #64748b; margin-bottom: 25px; }
+        .header-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .header-inputs input { padding: 12px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 1rem; }
+        .header-inputs input:focus { outline: none; border-color: var(--primary); }
+
+        /* PUNTUACIÓN FLOTANTE */
+        .score-bar { background: #fffbeb; border: 2px solid #f59e0b; padding: 10px; border-radius: 8px; text-align: center; font-weight: bold; margin-bottom: 20px; display: none; }
+        
+        .section { margin-bottom: 30px; padding: 20px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0; }
+        .section h2 { color: var(--secondary); margin-bottom: 15px; border-bottom: 2px solid var(--secondary); padding-bottom: 5px; }
+        .theory-box { background: #eff6ff; padding: 15px; border-radius: 8px; margin-bottom: 15px; font-size: 0.95rem; }
+        
+        .q-item { background: white; padding: 15px; margin: 12px 0; border-radius: 8px; border-left: 5px solid var(--primary); }
+        .q-header { display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 8px; }
+        .pts { background: #dbeafe; color: var(--primary); padding: 2px 8px; border-radius: 10px; font-size: 0.8rem; font-weight: bold; }
+        .att { color: #ef4444; font-size: 0.8rem; font-style: italic; }
+        
+        .options label { display: block; margin: 6px 0; padding: 8px; cursor: pointer; border-radius: 5px; transition: 0.2s; }
+        .options label:hover { background: #e2e8f0; }
+        input[type="radio"] { margin-right: 10px; accent-color: var(--primary); }
+        select { padding: 8px; border-radius: 6px; border: 2px solid #cbd5e1; width: 100%; max-width: 250px; }
+        
+        .btn-verify { background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; margin-top: 8px; }
+        .btn-verify:hover { background: var(--secondary); }
+        .btn-verify:disabled { background: #94a3b8; cursor: not-allowed; }
+        
+        .feedback { margin-top: 8px; padding: 8px; border-radius: 5px; font-weight: 600; font-size: 0.9rem; display: none; }
+        .feedback.correct { background: #dcfce7; color: #166534; display: block; }
+        .feedback.incorrect { background: #fee2e2; color: #991b1b; display: block; }
+        .feedback.warning { background: #fef3c7; color: #92400e; display: block; }
+
+        /* CARRERA */
+        .race-track { background: #e2e8f0; height: 80px; border-radius: 40px; position: relative; margin: 20px 0; overflow: hidden; border: 2px dashed #94a3b8; }
+        .race-line { position: absolute; right: 20px; top: 0; bottom: 0; width: 4px; background: #ef4444; }
+        .finish-flag { position: absolute; right: 0; top: 0; bottom: 0; width: 20px; background: linear-gradient(to bottom, #000 50%, #fff 50%); }
+        .racer { position: absolute; left: 10px; top: 10px; font-size: 3rem; transition: left 0.5s ease-in-out; }
+        .race-question { background: #fff; padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center; }
+        
+        .btn-main { background: #10b981; color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; cursor: pointer; font-size: 1.1rem; margin-top: 20px; font-weight: bold; }
+        .btn-main:hover { background: #059669; }
+
+        /* IMPRESIÓN */
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; padding: 0; max-width: 100%; }
+            .header-inputs, .btn-verify, .btn-main, .feedback, .att, .race-track, .racer { display: none !important; }
+            #print-header { display: block !important; text-align: center; border-bottom: 3px solid #000; padding-bottom: 15px; margin-bottom: 20px; }
+            #print-header h2 { color: #000; }
+            .section { break-inside: avoid; border: 1px solid #ccc; }
+            select, input[type="radio"] { border: 1px solid #000; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="print-header" style="display: none;">
+            <h2>📊 CALIFICACIÓN FINAL: <span id="print-score">0/10</span></h2>
+            <p><strong>Nombre:</strong> <span id="print-name">________________</span> | <strong>Curso:</strong> <span id="print-course">________________</span></p>
+        </div>
+
+        <h1>💻 Sistemas Operativos</h1>
+        <p class="subtitle">Tecnología e Informática | Grado Sexto</p>
+        
+        <div class="header-inputs">
+            <input type="text" id="nombre" placeholder="👤 Nombre del Estudiante">
+            <input type="text" id="curso" placeholder="🏫 Curso">
+        </div>
+
+        <div class="score-bar" id="score-bar">📊 Puntuación actual: <span id="live-score">0</span> / 10</div>
+
+        <!-- TEORÍA -->
+        <div class="section">
+            <h2>📖 Parte 1: Teoría para Copiar en el Cuaderno</h2>
+            <div class="theory-box">
+                <p><strong>Sistema Operativo:</strong> Es el programa más importante de un computador. Su principal función es actuar como intermediario entre el usuario y el hardware, facilitando la ejecución de aplicaciones y permitiendo la interacción con los recursos de la máquina.</p>
+                <p><strong>Windows:</strong> Sistema operativo de Microsoft. (Ej: Win 7, 10, 11). Incluye WordPad, Edge, Calculadora.</p>
+                <p><strong>Linux:</strong> Sistema operativo gratuito y de código libre. Muy usado en servidores. (Distribuciones: Ubuntu, Mint).</p>
+                <p><strong>Android:</strong> Sistema operativo para móviles y tabletas. (Incluye Play Store, Gmail).</p>
+                <p><strong>macOS:</strong> Sistema operativo de Apple para computadores Mac.</p>
+            </div>
+        </div>
+
+        <!-- ACTIVIDAD 1 -->
+        <div class="section">
+            <h2>❓ Actividad 1: Selección Múltiple <span class="pts">3.0 pts</span></h2>
+            <div id="act1-container"></div>
+        </div>
+
+        <!-- ACTIVIDAD 2 -->
+        <div class="section">
+            <h2>✅❌ Actividad 2: Verdadero o Falso <span class="pts">2.0 pts</span></h2>
+            <div id="act2-container"></div>
+        </div>
+
+        <!-- ACTIVIDAD 3 -->
+        <div class="section">
+            <h2>🔗 Actividad 3: Emparejamiento <span class="pts">1.0 pt</span></h2>
+            <div id="act3-container"></div>
+        </div>
+
+        <!-- ACTIVIDAD 4 -->
+        <div class="section">
+            <h2>📱 Actividad 4: Tabla de Dispositivos <span class="pts">1.0 pt</span></h2>
+            <div id="act4-container"></div>
+        </div>
+
+        <!-- ACTIVIDAD 5 -->
+        <div class="section">
+            <h2> Actividad 5: Identifica los SO <span class="pts">1.0 pt</span></h2>
+            <p>Selecciona <strong>únicamente</strong> los 5 elementos que son Sistemas Operativos.</p>
+            <div class="q-item" id="act5-container"></div>
+        </div>
+
+        <!-- ACTIVIDAD 6: CARRERA -->
+        <div class="section">
+            <h2>🏁 Actividad 6: Carrera de Preguntas <span class="pts">2.0 pts</span></h2>
+            <p>¡Lleva al corredor 🏃‍♂️ a la meta respondiendo correctamente!</p>
+            <div class="race-track">
+                <div class="racer" id="racer">🏃‍♂️</div>
+                <div class="race-line"></div>
+                <div class="finish-flag"></div>
+            </div>
+            <div class="race-question">
+                <p id="race-q-text">Pregunta de la carrera aparecerá aquí...</p>
+                <div class="options" id="race-options"></div>
+                <button class="btn-verify" id="race-btn" onclick="verifyRace()">Responder</button>
+                <div id="race-fb" class="feedback"></div>
+                <p class="att" id="race-att">Intentos restantes: 2</p>
+            </div>
+        </div>
+
+        <button class="btn-main" onclick="calculateFinalScore()">📊 Calificar Guía Completa</button>
+        <button class="btn-main" onclick="window.print()" style="margin-top:10px; background:#64748b;">🖨️ Guardar como PDF / Imprimir</button>
+    </div>
+
+    <script>
+        // ESTADO GLOBAL
+        const state = {
+            attempts: {}, locked: {},
+            scores: { a1: 0, a2: 0, a3: 0, a4: 0, a5: 0, race: 0 },
+            race: { qIndex: 0, correctAnswers: 0, attemptsLeft: 2, locked: false }
+        };
+
+        // DATOS DE ACTIVIDADES
+        const act1 = [
+            {q: "El sistema operativo es:", opts: ["Un videojuego", "El programa más importante del computador", "Un navegador web", "Un procesador de texto"], ans: 1},
+            {q: "¿Qué tarea realiza el sistema operativo?", opts: ["Solo muestra información en pantalla", "Permite la comunicación usuario-máquina y administra recursos", "Solo reproduce música", "Únicamente conecta a Internet"], ans: 1},
+            {q: "¿Por qué Windows facilita el uso del computador?", opts: ["Porque es gratuito", "Porque sirve como interfaz entre usuario y computadora", "Porque no requiere instalación", "Porque funciona sin hardware"], ans: 1},
+            {q: "¿Qué empresa desarrolló Windows?", opts: ["Apple", "Google", "Microsoft", "Linux Foundation"], ans: 2},
+            {q: "¿Cuál es una versión de Windows?", opts: ["Ubuntu", "Windows 10", "Android KitKat", "Debian"], ans: 1},
+            {q: "Linux se caracteriza por ser:", opts: ["Software libre", "Un videojuego", "Un navegador", "Un procesador de texto"], ans: 0},
+            {q: "Android se utiliza principalmente en:", opts: ["Impresoras", "Celulares y tabletas", "Teclados", "Memorias USB"], ans: 1},
+            {q: "¿Cuál es el sistema operativo de los computadores Mac?", opts: ["Ubuntu", "Android", "macOS", "Windows"], ans: 2},
+            {q: "¿Cuál es una distribución de Linux?", opts: ["Windows 11", "Ubuntu", "Android", "iOS"], ans: 1},
+            {q: "¿Qué aplicación está incluida en Android?", opts: ["Microsoft Edge", "Play Store", "WordPad", "Paint 3D"], ans: 1}
+        ];
+
+        const act2 = [
+            {q: "Windows es un sistema operativo.", ans: true},
+            {q: "Android se usa únicamente en computadores de escritorio.", ans: false},
+            {q: "Linux es software libre.", ans: true},
+            {q: "El sistema operativo permite la interacción entre el usuario y el computador.", ans: true},
+            {q: "Gmail es una versión de Android.", ans: false},
+            {q: "Ubuntu es una distribución de Linux.", ans: true},
+            {q: "macOS fue desarrollado por Apple.", ans: true},
+            {q: "El sistema operativo administra archivos y dispositivos.", ans: true}
+        ];
+
+        const act3 = [
+            {q: "1. Windows", opts: {A: "Utilizado en celulares", B: "Sistema operativo de Apple", C: "Software libre", D: "Desarrollado por Microsoft"}, ans: "D"},
+            {q: "2. Linux", opts: {A: "Utilizado en celulares", B: "Sistema operativo de Apple", C: "Software libre", D: "Desarrollado por Microsoft"}, ans: "C"},
+            {q: "3. Android", opts: {A: "Utilizado en celulares", B: "Sistema operativo de Apple", C: "Software libre", D: "Desarrollado por Microsoft"}, ans: "A"},
+            {q: "4. macOS", opts: {A: "Utilizado en celulares", B: "Sistema operativo de Apple", C: "Software libre", D: "Desarrollado por Microsoft"}, ans: "B"}
+        ];
+
+        const act4 = [
+            {q: "Windows funciona principalmente en:", opts: ["Computadores", "Celulares", "Consolas"], ans: 0},
+            {q: "Android funciona principalmente en:", opts: ["Computadores", "Celulares", "Servidores"], ans: 1},
+            {q: "macOS funciona principalmente en:", opts: ["Computadores", "Celulares", "Impresoras"], ans: 0},
+            {q: "Linux es muy utilizado en:", opts: ["Celulares", "Servidores", "Refrigeradores"], ans: 1}
+        ];
+
+        const act5Items = ["Word", "Windows", "Linux", "Paint", "Android", "Excel", "macOS", "Chrome", "Ubuntu", "Gmail"];
+        const act5Correct = ["Windows", "Linux", "Android", "macOS", "Ubuntu"];
+
+        // Preguntas de la Carrera (5 preguntas)
+        const raceQuestions = [
+            {q: "¿Cuál es el sistema operativo de Google para celulares?", opts: ["iOS", "Windows", "Android", "Linux"], ans: 2},
+            {q: "¿Qué es una distribución de Linux?", opts: ["Una versión de Windows", "Ubuntu", "Un juego", "Un navegador"], ans: 1},
+            {q: "¿Qué empresa creó macOS?", opts: ["Microsoft", "Apple", "Google", "Samsung"], ans: 1},
+            {q: "¿Cuál es la principal característica de Linux?", opts: ["Es de pago", "Es Software Libre", "Solo funciona en celulares", "No tiene interfaz"], ans: 1},
+            {q: "¿Qué aplicación permite descargar apps en Android?", opts: ["Windows Store", "App Store", "Play Store", "Excel"], ans: 2}
+        ];
+
+        // RENDERIZADO
+        function renderAct1() {
+            const box = document.getElementById('act1-container');
+            act1.forEach((item, i) => {
+                const id = `a1_${i}`;
+                let html = `<div class="q-item"><div class="q-header"><strong>${i+1}. ${item.q}</strong><span class="pts">0.3 pts</span><span class="att" id="att_${id}">Intentos: 0/2</span></div><div class="options">`;
+                item.opts.forEach((opt, j) => html += `<label><input type="radio" name="${id}" value="${j}"> ${opt}</label>`);
+                html += `</div><button class="btn-verify" onclick="verify('${id}', ${item.ans}, 0.3, 'a1', 2)">Verificar</button><div id="fb_${id}" class="feedback"></div></div>`;
+                box.innerHTML += html;
+            });
+        }
+
+        function renderAct2() {
+            const box = document.getElementById('act2-container');
+            act2.forEach((item, i) => {
+                const id = `a2_${i}`;
+                box.innerHTML += `
+                    <div class="q-item">
+                        <div class="q-header"><strong>${i+1}. ${item.q}</strong><span class="pts">0.25 pts</span><span class="att" id="att_${id}">Intentos: 0/2</span></div>
+                        <label><input type="radio" name="${id}" value="true"> Verdadero</label>
+                        <label><input type="radio" name="${id}" value="false"> Falso</label>
+                        <button class="btn-verify" onclick="verify('${id}', '${item.ans}', 0.25, 'a2', 2)">Verificar</button>
+                        <div id="fb_${id}" class="feedback"></div>
+                    </div>`;
+            });
+        }
+
+        function renderAct3() {
+            const box = document.getElementById('act3-container');
+            act3.forEach((item, i) => {
+                const id = `a3_${i}`;
+                let opts = `<option value="">Selecciona...</option>`;
+                for(let k in item.opts) opts += `<option value="${k}">${k}. ${item.opts[k]}</option>`;
+                box.innerHTML += `
+                    <div class="q-item">
+                        <div class="q-header"><strong>${item.q}</strong><span class="pts">0.25 pts</span><span class="att" id="att_${id}">Intentos: 0/2</span></div>
+                        <select id="${id}">${opts}</select>
+                        <button class="btn-verify" onclick="verifySelect('${id}', '${item.ans}', 0.25, 'a3', 2)">Verificar</button>
+                        <div id="fb_${id}" class="feedback"></div>
+                    </div>`;
+            });
+        }
+
+        function renderAct4() {
+            const box = document.getElementById('act4-container');
+            act4.forEach((item, i) => {
+                const id = `a4_${i}`;
+                let opts = `<option value="">Selecciona...</option>`;
+                item.opts.forEach((opt, j) => opts += `<option value="${j}">${opt}</option>`);
+                box.innerHTML += `
+                    <div class="q-item">
+                        <div class="q-header"><strong>${i+1}. ${item.q}</strong><span class="pts">0.25 pts</span><span class="att" id="att_${id}">Intentos: 0/2</span></div>
+                        <select id="${id}">${opts}</select>
+                        <button class="btn-verify" onclick="verifySelect('${id}', ${item.ans}, 0.25, 'a4', 2)">Verificar</button>
+                        <div id="fb_${id}" class="feedback"></div>
+                    </div>`;
+            });
+        }
+
+        function renderAct5() {
+            const box = document.getElementById('act5-container');
+            let html = `<div class="options" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:8px;">`;
+            act5Items.forEach(item => html += `<label style="background:white; border:1px solid #e2e8f0; text-align:center; padding:8px;"><input type="checkbox" id="cb_${item}" value="${item}"> ${item}</label>`);
+            html += `</div><button class="btn-verify" onclick="verifyAct5()" style="margin-top:10px;">Verificar Selección</button><div id="fb_a5" class="feedback"></div>`;
+            box.innerHTML = html;
+        }
+
+        // LÓGICA DE VERIFICACIÓN
+        function verify(id, correctVal, pts, section, maxAttempts) {
+            if (state.locked[id] || (state.attempts[id] || 0) >= maxAttempts) return;
+            const sel = document.querySelector(`input[name="${id}"]:checked`);
+            if (!sel) return alert("Selecciona una opción antes de verificar.");
+            
+            state.attempts[id] = (state.attempts[id] || 0) + 1;
+            document.getElementById(`att_${id}`).textContent = `Intentos: ${state.attempts[id]}/${maxAttempts}`;
+            
+            const fb = document.getElementById(`fb_${id}`);
+            const btn = sel.closest('.q-item').querySelector('.btn-verify');
+            const isCorrect = (sel.value == correctVal);
+
+            if (isCorrect) {
+                fb.textContent = "✅ ¡Correcto!"; fb.className = "feedback correct";
+                state.locked[id] = true; state.scores[section] += pts;
+                btn.disabled = true;
+                document.querySelectorAll(`input[name="${id}"]`).forEach(i => i.disabled = true);
+            } else {
+                if (state.attempts[id] >= maxAttempts) {
+                    fb.textContent = `❌ Incorrecto. Respuesta correcta: ${correctVal === true ? 'Verdadero' : correctVal === false ? 'Falso' : act1[parseInt(id.split('_')[1])].opts[correctVal]}`;
+                    fb.className = "feedback incorrect";
+                    state.locked[id] = true; btn.disabled = true;
+                    document.querySelectorAll(`input[name="${id}"]`).forEach(i => i.disabled = true);
+                } else {
+                    fb.textContent = "⚠️ Incorrecto. Te queda 1 oportunidad."; fb.className = "feedback warning";
+                }
+            }
+            updateLiveScore();
+        }
+
+        function verifySelect(id, correctVal, pts, section, maxAttempts) {
+            if (state.locked[id] || (state.attempts[id] || 0) >= maxAttempts) return;
+            const sel = document.getElementById(id);
+            const val = sel.value;
+            if (val === "") return alert("Selecciona una opción.");
+            
+            state.attempts[id] = (state.attempts[id] || 0) + 1;
+            document.getElementById(`att_${id}`).textContent = `Intentos: ${state.attempts[id]}/${maxAttempts}`;
+            
+            const fb = document.getElementById(`fb_${id}`);
+            const btn = sel.nextElementSibling;
+            const isCorrect = (val == correctVal);
+
+            if (isCorrect) {
+                fb.textContent = "✅ ¡Correcto!"; fb.className = "feedback correct";
+                state.locked[id] = true; state.scores[section] += pts;
+                btn.disabled = true; sel.disabled = true;
+            } else {
+                if (state.attempts[id] >= maxAttempts) {
+                    const correctLabel = typeof correctVal === 'string' ? correctVal : act4[parseInt(id.split('_')[1])].opts[correctVal];
+                    fb.textContent = `❌ Incorrecto. Respuesta correcta: ${correctLabel}`; fb.className = "feedback incorrect";
+                    state.locked[id] = true; btn.disabled = true; sel.disabled = true;
+                } else {
+                    fb.textContent = "⚠️ Incorrecto. Te queda 1 oportunidad."; fb.className = "feedback warning";
+                }
+            }
+            updateLiveScore();
+        }
+
+        function verifyAct5() {
+            if (state.locked['a5'] || (state.attempts['a5'] || 0) >= 2) return;
+            const selected = Array.from(document.querySelectorAll('#act5-container input:checked')).map(cb => cb.value);
+            const isCorrect = selected.length === 5 && selected.every(s => act5Correct.includes(s));
+            
+            state.attempts['a5'] = (state.attempts['a5'] || 0) + 1;
+            const fb = document.getElementById('fb_a5');
+            const btn = document.querySelector('#act5-container .btn-verify');
+            
+            if (isCorrect) {
+                fb.textContent = "✅ ¡Perfecto! Has seleccionado los 5 sistemas operativos."; fb.className = "feedback correct";
+                state.locked['a5'] = true; state.scores.a5 = 1; btn.disabled = true;
+                document.querySelectorAll('#act5-container input').forEach(cb => cb.disabled = true);
+            } else {
+                if (state.attempts['a5'] >= 2) {
+                    fb.textContent = `❌ Incorrecto. Los SO son: ${act5Correct.join(', ')}`; fb.className = "feedback incorrect";
+                    state.locked['a5'] = true; btn.disabled = true;
+                    document.querySelectorAll('#act5-container input').forEach(cb => cb.disabled = true);
+                } else {
+                    fb.textContent = "⚠️ Incorrecto. Selecciona solo los 5 que son Sistemas Operativos. 1 intento restante."; fb.className = "feedback warning";
+                }
+            }
+            updateLiveScore();
+        }
+
+        // LÓGICA CARRERA
+        function loadRaceQuestion() {
+            if (state.race.qIndex >= raceQuestions.length) {
+                document.getElementById('race-q-text').textContent = "🏆 ¡Meta alcanzada!";
+                document.getElementById('race-options').innerHTML = "";
+                document.getElementById('race-btn').style.display = 'none';
+                return;
+            }
+            
+            const q = raceQuestions[state.race.qIndex];
+            document.getElementById('race-q-text').textContent = `${state.race.qIndex + 1}. ${q.q}`;
+            const optsDiv = document.getElementById('race-options');
+            optsDiv.innerHTML = '';
+            
+            q.opts.forEach((opt, i) => {
+                optsDiv.innerHTML += `<label><input type="radio" name="race-opt" value="${i}"> ${opt}</label>`;
+            });
+            
+            document.getElementById('race-btn').disabled = false;
+            document.getElementById('race-att').textContent = `Intentos restantes: ${state.race.attemptsLeft}`;
+            document.getElementById('race-fb').style.display = 'none';
+        }
+
+        window.verifyRace = function() {
+            if (state.race.locked) return;
+            const sel = document.querySelector('input[name="race-opt"]:checked');
+            if (!sel) return alert("Selecciona una respuesta.");
+            
+            const q = raceQuestions[state.race.qIndex];
+            const fb = document.getElementById('race-fb');
+            const btn = document.getElementById('race-btn');
+            
+            if (parseInt(sel.value) === q.ans) {
+                fb.textContent = "✅ ¡Correcto! Avanzas."; fb.className = "feedback correct";
+                state.scores.race += 0.4; // 2 pts / 5 preguntas
+                state.race.correctAnswers++;
+                moveRacer(state.race.correctAnswers);
+                state.race.qIndex++;
+                state.race.attemptsLeft = 2; // Reiniciar intentos para la siguiente pregunta
+                setTimeout(loadRaceQuestion, 1000);
+            } else {
+                state.race.attemptsLeft--;
+                document.getElementById('race-att').textContent = `Intentos restantes: ${state.race.attemptsLeft}`;
+                if (state.race.attemptsLeft <= 0) {
+                    fb.textContent = "❌ Se acabaron los intentos para esta pregunta."; fb.className = "feedback incorrect";
+                    state.race.qIndex++;
+                    state.race.attemptsLeft = 2;
+                    setTimeout(loadRaceQuestion, 1500);
+                } else {
+                    fb.textContent = "⚠️ Incorrecto. Te queda 1 intento."; fb.className = "feedback warning";
+                }
+            }
+            updateLiveScore();
+        };
+
+        function moveRacer(steps) {
+            const racer = document.getElementById('racer');
+            const trackWidth = document.querySelector('.race-track').offsetWidth - 60;
+            const stepSize = trackWidth / 5;
+            racer.style.left = (10 + steps * stepSize) + 'px';
+        }
+
+        function updateLiveScore() {
+            const total = Object.values(state.scores).reduce((a,b) => a+b, 0);
+            document.getElementById('live-score').textContent = total.toFixed(1);
+        }
+
+        function calculateFinalScore() {
+            const total = Math.min(10, Object.values(state.scores).reduce((a,b) => a+b, 0));
+            const nombre = document.getElementById('nombre').value || "Estudiante";
+            const curso = document.getElementById('curso').value || "Sin curso";
+            
+            document.getElementById('print-score').textContent = total + "/10";
+            document.getElementById('print-name').textContent = nombre;
+            document.getElementById('print-course').textContent = curso;
+            
+            const box = document.getElementById('score-bar');
+            box.style.display = 'block';
+            box.innerHTML = `📊 <strong>CALIFICACIÓN FINAL: ${total}/10</strong><br><small>${nombre} | ${curso}</small>`;
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        window.onload = () => {
+            renderAct1(); renderAct2(); renderAct3(); renderAct4(); renderAct5();
+            loadRaceQuestion();
+        };
+    </script>
+</body>
+</html>
